@@ -6,6 +6,7 @@ import { extractWithCopilot } from "../copilot/extract.js"
 import { extractFirstJson } from "../utils/json-extract.js"
 import { adrPrompt } from "./prompt.js"
 import { renderAdrMd } from "./render.js"
+import { CONFIG } from "../config.js"
 
 export async function runAdr({ repoDir, outDir }) {
   const schemaPath = path.resolve("schemas/adr.schema.json")
@@ -39,7 +40,7 @@ export async function runAdr({ repoDir, outDir }) {
     json = extractFirstJson(raw)
   } catch (e) {
     console.error("No JSON found in Copilot output")
-    console.error(String(raw).slice(0, 1200))
+    console.error(String(raw).slice(0, CONFIG.COPILOT_DEBUG_PREVIEW_LENGTH))
     throw e
   }
 

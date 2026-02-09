@@ -45,7 +45,8 @@ npm link  # Makes 'modernise' command available globally
 
 - Node.js v20+
 - Git
-- GitHub Copilot CLI (`gh copilot` command available)
+- GitHub Copilot authentication (SDK uses logged-in GitHub user)
+- GitHub Copilot CLI (`gh copilot` command available) — used as fallback if SDK fails
 - Access to Defra CDP templates (cdp-node-backend-template, cdp-node-frontend-template)
 
 ## Usage
@@ -257,6 +258,8 @@ All configuration is centralized in [src/config.js](src/config.js):
 ```javascript
 export const CONFIG = {
   COPILOT_TIMEOUT_MS: 300000,           // 5 minutes
+  COPILOT_USE_SDK: true,                // Use SDK first, fallback to CLI
+  COPILOT_ERROR_PREVIEW_LENGTH: 800,    // Error output truncation
   MAX_GATE_FIX_ATTEMPTS: 2,             // Auto-fix retry limit
   MAX_FILE_CONTENT_LENGTH: 12000,       // Token management
   PATCH_FILENAME: ".modernise.patch",
@@ -264,10 +267,32 @@ export const CONFIG = {
   ALLOWED_PATCH_PATHS: ["src/**"],      // Safety whitelist
   REQUIRED_CDP_FILES: ["README.md", "Dockerfile", "package.json"],
   CDP_TEMPLATES: {
-    backend: "cdp-node-backend-template",
-    frontend: "cdp-node-frontend-template"
+    BACKEND: "cdp-node-backend-template",
+    FRONTEND: "cdp-node-frontend-template"
   }
 }
+```
+
+### GitHub Copilot Integration
+
+The factory uses the **GitHub Copilot SDK** (`@github/copilot-sdk`) as the primary method for AI-assisted code generation, with automatic fallback to the **Copilot CLI** if the SDK fails.
+
+**SDK Advantages:**
+- Programmatic control via TypeScript/Node.js API
+- Event-based streaming responses
+- Better error handling and retry logic
+- More stable than subprocess execution
+
+**CLI Fallback:**
+- Used when SDK initialization fails
+- Supports legacy `prompt` and `interactive` modes
+- Invoked via `execa` subprocess
+
+**To disable SDK** (use CLI only), set `COPILOT_USE_SDK: false` in [src/config.js](src/config.js).
+
+**To force CLI fallback** at runtime:
+```javascript
+await extractWithCopilot(repoDir, prompt, { useSDK: false })
 ```
 
 ## Schemas
@@ -355,6 +380,26 @@ The codebase follows clean code principles:
 Example: `implement/run.js` reduced from 231 lines to 31 lines by extracting focused modules.
 
 ## Troubleshooting
+
+### Copilot SDK/CLI Issues
+
+**Problem**: `SDK failed, falling back to CLI: ...`
+
+**Solution**: SDK initialization failed but CLI fallback activated automatically. This is expected behavior. If you see this frequently, check GitHub authentication (`gh auth status`).
+
+---
+
+**Problem**: `SDK timeout`
+
+**Solution**: SDK took longer than 5 minutes to respond. Retry or simplify prompt.
+
+---
+
+**Problem**: `SDK session error`
+
+**Solution**: SDK encountered an error during execution. Factory automatically falls back to CLI. To debug, temporarily disable SDK: set `COPILOT_USE_SDK: false` in [src/config.js](src/config.js).
+
+---
 
 ### Copilot CLI Errors
 

@@ -6,6 +6,7 @@ import { extractWithCopilot } from "../copilot/extract.js"
 import { extractFirstJson } from "../utils/json-extract.js"
 import { observePrompt } from "./prompt.js"
 import { renderObserveMd } from "./render.js"
+import { CONFIG } from "../config.js"
 
 export async function runObserve(repoDir, outDir, repo) {
   const schemaPath = path.resolve("schemas/legacy-observe.schema.json")
@@ -43,7 +44,7 @@ export async function runObserve(repoDir, outDir, repo) {
   } catch (e) {
     console.error("No JSON found in Copilot output")
     console.error("Raw output (first 1200 chars):")
-    console.error(String(raw).slice(0, 1200))
+    console.error(String(raw).slice(0, CONFIG.COPILOT_DEBUG_PREVIEW_LENGTH))
     throw e
   }
 

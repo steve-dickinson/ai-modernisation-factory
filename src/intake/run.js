@@ -6,6 +6,7 @@ import { extractWithCopilot } from "../copilot/extract.js"
 import { intakePrompt } from "./prompt.js"
 import { renderIntakeMd } from "./render.js"
 import { extractFirstJson } from "../utils/json-extract.js";
+import { CONFIG } from "../config.js"
 
 export async function runIntake(repoDir, outDir) {
   const schemaPath = path.resolve("schemas/legacy-intake.schema.json")
@@ -25,7 +26,7 @@ export async function runIntake(repoDir, outDir) {
   } catch (e) {
     console.error("Copilot output contained no parseable JSON.");
     console.error("Raw output (first 800 chars):")
-    console.error(String(raw).slice(0, 800))
+    console.error(String(raw).slice(0, CONFIG.COPILOT_ERROR_PREVIEW_LENGTH))
     throw e
  }
 

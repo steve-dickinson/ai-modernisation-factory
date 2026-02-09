@@ -14,7 +14,6 @@ export function validateDiff(diffText) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
 
-    // Track files being modified
     if (line.startsWith("diff --git")) {
       const match = line.match(/diff --git a\/(.*) b\/(.*)/)
       if (match) {
@@ -23,12 +22,10 @@ export function validateDiff(diffText) {
       }
     }
 
-    // Check for placeholder SHAs
     if (line.startsWith("index ")) {
       const match = line.match(/index ([a-f0-9]+)\.\.([a-f0-9]+)/)
       if (match) {
         const [, oldSha, newSha] = match
-        // Warn about placeholder SHAs but don't fail (git apply --3way might work)
         if (oldSha === "0000000" || newSha === "1234567" || newSha === "0000000") {
           issues.push(
             `Warning: ${currentFile?.path || "unknown file"} has placeholder SHA. ` +
@@ -38,7 +35,6 @@ export function validateDiff(diffText) {
       }
     }
 
-    // Check for malformed hunk headers
     if (line.startsWith("@@")) {
       const match = line.match(/@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/)
       if (!match) {
@@ -49,7 +45,6 @@ export function validateDiff(diffText) {
     }
   }
 
-  // Check for common issues
   if (files.length === 0) {
     issues.push("No files found in diff")
   }

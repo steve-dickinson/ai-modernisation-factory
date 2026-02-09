@@ -6,6 +6,7 @@ import { extractWithCopilot } from "../copilot/extract.js"
 import { extractFirstJson } from "../utils/json-extract.js"
 import { slicePrompt } from "./prompt.js"
 import { renderSliceMd } from "./render.js"
+import { CONFIG } from "../config.js"
 
 function looksHealthOnly(slice) {
   const preserve = (slice.preserve?.interfaces || []).join(" ").toLowerCase()
@@ -55,7 +56,7 @@ export async function runSlice({ repoDir, outDir, repo }) {
     json = extractFirstJson(raw)
   } catch (e) {
     console.error("No JSON found in Copilot output")
-    console.error(String(raw).slice(0, 1200))
+    console.error(String(raw).slice(0, CONFIG.COPILOT_DEBUG_PREVIEW_LENGTH))
     throw e
   }
 
@@ -68,7 +69,7 @@ export async function runSlice({ repoDir, outDir, repo }) {
     console.error(JSON.stringify(validate.errors, null, 2))
 
     console.error("\n--- Parsed JSON (first 1200 chars) ---")
-    console.error(JSON.stringify(json, null, 2).slice(0, 1200))
+    console.error(JSON.stringify(json, null, 2).slice(0, CONFIG.COPILOT_DEBUG_PREVIEW_LENGTH))
 
     console.error("\n--- Schema path ---")
     console.error(schemaPath)
