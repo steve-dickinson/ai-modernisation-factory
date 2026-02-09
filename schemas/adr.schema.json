@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ADR Draft",
+  "type": "object",
+  "required": ["id", "title", "status", "context", "decision", "consequences", "links"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" },
+    "title": {
+      "type": "string",
+      "pattern": "^(?!.*\\bv\\d+\\b).*$"
+    },
+    "status": { "type": "string", "enum": ["draft"] },
+    "context": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "type": "string" }
+    },
+    "decision": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "type": "string" }
+    },
+    "consequences": {
+      "type": "object",
+      "required": ["positive", "negative", "neutral"],
+      "additionalProperties": false,
+      "properties": {
+        "positive": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "negative": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "neutral": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+    "links": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string" }
+    }
+  }
+}

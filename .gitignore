@@ -1,0 +1,3 @@
+*.modernise
+.env
+node_modules

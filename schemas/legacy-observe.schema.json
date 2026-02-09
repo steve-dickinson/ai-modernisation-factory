@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Legacy Observe",
+  "type": "object",
+  "required": ["system", "interfaces", "invariants", "data", "failureModes", "unknowns"],
+  "additionalProperties": false,
+  "properties": {
+    "system": {
+      "type": "object",
+      "required": ["name", "repo"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "repo": { "type": "string" },
+        "classification": {
+          "type": "string",
+          "enum": ["service", "desktop", "office", "batch", "database", "mixed", "unknown"]
+        }
+      }
+    },
+
+    "interfaces": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["type", "name", "contract", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["http", "queue", "schedule", "manual", "ui", "file-drop", "database-trigger", "cli", "other"]
+          },
+          "name": { "type": "string" },
+          "contract": { "type": "string" },
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "data": {
+      "type": "object",
+      "required": ["inputs", "outputs", "stores"],
+      "additionalProperties": false,
+      "properties": {
+        "inputs": { "type": "array", "items": { "$ref": "#/definitions/dataArtifact" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/definitions/dataArtifact" } },
+        "stores": { "type": "array", "items": { "$ref": "#/definitions/dataStore" } }
+      }
+    },
+
+    "invariants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["statement", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "statement": { "type": "string" },
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["statement", "evidenceOrRationale"],
+        "additionalProperties": false,
+        "properties": {
+          "statement": { "type": "string" },
+          "evidenceOrRationale": { "type": "string" }
+        }
+      }
+    },
+
+    "failureModes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["trigger", "observedBehaviour", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "trigger": { "type": "string" },
+          "observedBehaviour": { "type": "string" },
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+        }
+      }
+    },
+
+    "unknowns": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    }
+  },
+
+  "definitions": {
+    "dataArtifact": {
+      "type": "object",
+      "required": ["type", "name", "format", "contract", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["file", "message", "recordset", "spreadsheet", "email", "api-payload", "report", "other"]
+        },
+        "name": { "type": "string" },
+        "format": { "type": "string" },
+        "contract": { "type": "string" },
+        "schemaHints": { "type": "array", "items": { "type": "string" } },
+        "pathHints": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    },
+
+    "dataStore": {
+      "type": "object",
+      "required": ["type", "name", "direction", "contract", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["database", "table", "blob", "sharepoint", "filesystem", "access", "excel", "other"]
+        },
+        "name": { "type": "string" },
+        "direction": { "type": "string", "enum": ["read", "write", "readwrite"] },
+        "contract": { "type": "string" },
+        "pathHints": { "type": "array", "items": { "type": "string" } },
+        "evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+      }
+    }
+  }
+}
