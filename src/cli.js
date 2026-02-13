@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from "commander"
 import { prepareWorkspace } from "./workspace.js"
 import { runIntake } from "./intake/run.js"
@@ -8,6 +10,7 @@ import { runScaffold } from "./scaffold/run.js"
 import { runGate } from "./gate/run.js"
 import { runSeed } from "./seed/run.js"
 import { runImplement } from "./implement/run.js"
+import { startInteractive } from "./interactive.js"
 
 const program = new Command()
 
@@ -112,4 +115,8 @@ program
     })
   })
 
-program.parse()
+if (process.argv.length <= 2) {
+  await startInteractive()
+} else {
+  program.parse()
+}
